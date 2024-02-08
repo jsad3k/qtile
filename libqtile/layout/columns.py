@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from libqtile.command.base import expose_command
-from libqtile.layout.base import Layout, _ClientList
+from libqtile.layout.base import Layout, _ClientList, place_client
 from libqtile.log_utils import logger
 
 if TYPE_CHECKING:
@@ -320,19 +320,20 @@ class Columns(Layout):
                 pos += col.heights[c]
             height = int(0.5 + col.heights[client] * screen_rect.height * 0.01 / len(col))
             y = screen_rect.y + int(0.5 + pos * screen_rect.height * 0.01 / len(col))
-            client.place(
-                x, y, width - 2 * border, height - 2 * border, border, color, margin=margin_size
-            )
+
+            place_client(client, screen_rect, x, y, width, height, border, color, margin_size)
             client.unhide()
         elif client == col.cw:
-            client.place(
+            place_client(
+                client,
+                screen_rect,
                 x,
                 screen_rect.y,
-                width - 2 * border,
-                screen_rect.height - 2 * border,
+                width,
+                screen_rect.height,
                 border,
                 color,
-                margin=margin_size,
+                margin_size,
             )
             client.unhide()
         else:
