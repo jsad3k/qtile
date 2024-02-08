@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from libqtile.command.base import expose_command
-from libqtile.layout.base import Layout, _ClientList
+from libqtile.layout.base import Layout, _ClientList, place_client
 
 if TYPE_CHECKING:
     from typing import Any, Self
@@ -253,7 +253,9 @@ class Stack(Layout):
             column_height = int(screen_rect.height / len(s))
             window_height = column_height - 2 * self.border_width
             yoffset = screen_rect.y + s.index(client) * column_height
-            client.place(
+            place_client(
+                client,
+                screen_rect,
                 xoffset,
                 yoffset,
                 window_width,
@@ -265,7 +267,9 @@ class Stack(Layout):
             client.unhide()
         else:
             if client == s.cw:
-                client.place(
+                place_client(
+                    client,
+                    screen_rect,
                     xoffset,
                     screen_rect.y,
                     window_width,

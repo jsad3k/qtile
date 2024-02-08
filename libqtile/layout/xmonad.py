@@ -39,7 +39,7 @@ from collections import namedtuple
 from typing import TYPE_CHECKING
 
 from libqtile.command.base import expose_command
-from libqtile.layout.base import _SimpleLayoutBase
+from libqtile.layout.base import _SimpleLayoutBase, place_client
 
 if TYPE_CHECKING:
     from typing import Any, Self
@@ -1274,7 +1274,18 @@ class MonadThreeCol(MonadTall):
         if self.main_centered and len(self.clients) > 2:
             left += (self.screen_rect.width - width) // 2
 
-        self._place_client(client, left, top, width, height)
+        color = self.border_focus if client.has_focus else self.border_normal
+        place_client(
+            client,
+            self.screen_rect,
+            left,
+            top,
+            width,
+            height,
+            self.border_width,
+            color,
+            self.margin,
+        )
 
     def _configure_left(self, client, index):
         """Configure the left column"""
@@ -1286,7 +1297,18 @@ class MonadThreeCol(MonadTall):
         if not self.main_centered or len(self.clients) == 2:
             left += self._get_main_width()
 
-        self._place_client(client, left, top, width, height)
+        color = self.border_focus if client.has_focus else self.border_normal
+        place_client(
+            client,
+            self.screen_rect,
+            left,
+            top,
+            width,
+            height,
+            self.border_width,
+            color,
+            self.margin,
+        )
 
     def _configure_right(self, client, index):
         """Configure the right column"""
@@ -1295,7 +1317,18 @@ class MonadThreeCol(MonadTall):
         left = self.screen_rect.x + widths[0] + self._get_main_width()
         top = self.screen_rect.y + self._get_relative_sizes_above(index)
 
-        self._place_client(client, left, top, widths[1], height)
+        color = self.border_focus if client.has_focus else self.border_normal
+        place_client(
+            client,
+            self.screen_rect,
+            left,
+            top,
+            widths[1],
+            height,
+            self.border_width,
+            color,
+            self.margin,
+        )
 
     def _get_main_width(self):
         """Calculate the main client's width"""
@@ -1317,38 +1350,6 @@ class MonadThreeCol(MonadTall):
         """Return the sum of the heights of all clients above the provided index"""
         column = self._get_column(index - 1)
         return sum(self.relative_sizes[column.start : index - 1])
-
-    def _place_client(self, client, left, top, width, height):
-        """Place a client on the screen
-
-        Will prevent double margins by applying east and south margins only
-        when the client is the rightmost or the bottommost window.
-        """
-
-        # Create a temporary margin list for the client
-        if isinstance(self.margin, int):
-            margin = [self.margin] * 4
-        else:
-            # We need to copy this list otherwise we'd be modifying self.margin!
-            margin = self.margin.copy()
-
-        rightmost = left + width - self.screen_rect.x + margin[1] >= self.screen_rect.width
-        bottommost = top + height - self.screen_rect.y + margin[2] >= self.screen_rect.height
-
-        if not rightmost:
-            margin[1] = 0
-        if not bottommost:
-            margin[2] = 0
-
-        client.place(
-            left,
-            top,
-            width - 2 * self.border_width,
-            height - 2 * self.border_width,
-            self.border_width,
-            self.border_focus if client.has_focus else self.border_normal,
-            margin=margin,
-        )
 
     @expose_command()
     def normalize(self, redraw=True):
