@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from libqtile.command.base import expose_command
-from libqtile.layout.base import Layout
+from libqtile.layout.base import Layout, place_client
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -238,7 +238,9 @@ class Bsp(Layout):
         margin = self.margin_on_single if node is self.root else self.margin
 
         if node is not None:
-            client.place(
+            place_client(
+                client,
+                screen_rect,
                 node.x,
                 node.y,
                 node.w - 2 * border,
