@@ -3,6 +3,7 @@ import pytest
 import libqtile.config
 from libqtile import layout
 from libqtile.confreader import Config
+from test.helpers import HEIGHT, WIDTH
 from test.layouts.layout_utils import assert_focus_path, assert_focused
 
 
@@ -93,6 +94,23 @@ def test_bsp_wrap_clients(manager):
     # and here
     manager.c.layout.previous()
     assert_focused(manager, "two")
+
+
+@bsp_config
+def test_bsp_border_width_not_doubled(manager):
+    """Bsp must apply border_width exactly once per edge.
+
+    When placement was routed through Layout.place_client (which already
+    subtracts the border internally), bsp.py still pre-subtracted the
+    border itself, shrinking every window by an extra 2 * border_width.
+    """
+    manager.test_window("one")
+    manager.test_window("two")
+
+    border_width = 2  # Bsp's default border_width
+    for info in manager.c.windows():
+        assert info["width"] == WIDTH - 2 * border_width
+        assert info["height"] == HEIGHT // 2 - 2 * border_width
 
 
 def test_bsp_swap():
