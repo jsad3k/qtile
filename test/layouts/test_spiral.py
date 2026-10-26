@@ -53,6 +53,13 @@ singleborder_disabled_config = pytest.mark.parametrize(
 )
 
 
+class MarginConfig(SpiralConfig):
+    layouts = [layout.Spiral(ratio=0.5, border_width=0, margin=4)]
+
+
+margin_config = pytest.mark.parametrize("manager", [MarginConfig], indirect=True)
+
+
 @spiral_config
 def test_spiral_left(manager):
     manager.test_window("one")
@@ -231,6 +238,30 @@ def test_spiral_shuffle_no_wrap_up(manager):
     manager.c.layout.down()
     manager.c.layout.shuffle_up()
     assert manager.c.layout.info()["clients"] == ["one", "two", "three"]
+
+
+@margin_config
+def test_spiral_margin_no_double_margin(manager):
+    """Spiral must not double margins between adjacent windows. Spiral used
+    to have its own margin-halving fix for this (_fix_double_margins); it
+    was reworked to use the shared Layout.place_client mechanism instead, so
+    this confirms that still prevents doubling at the internal boundary
+    between its split windows.
+    """
+    manager.test_window("one")
+    manager.test_window("two")
+
+    # New clients are inserted at the head of the client list by default (the
+    # default new_client_position is "top"), so identify the left/right
+    # windows by position rather than by add order.
+    left, right = sorted(manager.c.windows(), key=lambda w: w["x"])
+
+    # Left window touches the screen's left edge, so its west margin (4) applies.
+    assert left["x"] == 4
+    # Gap between the two windows is exactly one margin width (4), not doubled.
+    assert right["x"] - (left["x"] + left["width"]) == 4
+    # Right window touches the screen's right edge, so its east margin (4) applies.
+    assert right["x"] + right["width"] == WIDTH - 4
 
 
 @singleborder_disabled_config

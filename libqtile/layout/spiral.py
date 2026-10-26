@@ -163,22 +163,12 @@ class Spiral(_SimpleLayoutBase):
         else:
             bc = self.border_normal
 
-        (x, y, w, h), margins = self._fix_double_margins(x, y, w, h)
-
         if len(self.clients) == 1 and not self.border_on_single:
             border_width = 0
         else:
             border_width = self.border_width
 
-        win.place(
-            x,
-            y,
-            w - border_width * 2,
-            h - border_width * 2,
-            border_width,
-            bc,
-            margin=margins,
-        )
+        self.place_client(win, screen, x, y, w, h, border_width, bc, margin=self.margin)
         win.unhide()
 
     def split_left(self, rect: Rect) -> tuple[Rect, Rect]:
@@ -224,35 +214,6 @@ class Spiral(_SimpleLayoutBase):
         rect_y = win_y - (rect_h - win_h)
         rect_h = rect_h - win_h
         return (win_x, win_y, win_w, win_h), (rect_x, rect_y, rect_w, rect_h)
-
-    def _fix_double_margins(
-        self, win_x: int, win_y: int, win_w: int, win_h: int
-    ) -> tuple[Rect, list[int]]:
-        """Prevent doubling up of margins by halving margins for internal margins."""
-        if isinstance(self.margin, int):
-            margins = [self.margin] * 4
-        else:
-            margins = self.margin
-
-        # Top
-        if win_y - margins[0] > self.last_screen.y:
-            win_y -= margins[0] // 2
-            win_h += margins[0] // 2
-
-        # Right
-        if win_x + win_w + margins[1] < (self.last_screen.x + self.last_screen.width):
-            win_w += margins[1] // 2
-
-        # Bottom
-        if win_y + win_h + margins[2] < (self.last_screen.y + self.last_screen.height):
-            win_h += margins[2] // 2
-
-        # Left
-        if win_x - margins[3] > self.last_screen.x:
-            win_x -= margins[3] // 2
-            win_w += margins[3] // 2
-
-        return (win_x, win_y, win_w, win_h), margins
 
     def has_invalid_size(self, win: Rect) -> bool:
         """
