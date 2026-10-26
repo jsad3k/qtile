@@ -88,14 +88,14 @@ class Matrix(_SimpleLayoutBase):
         row_height = int(screen_rect.height / float(column_size))
         xoffset = screen_rect.x + col * column_width
         yoffset = screen_rect.y + row * row_height
-        win_width = column_width - 2 * self.border_width
-        win_height = row_height - 2 * self.border_width
         # place
-        client.place(
+        self.place_client(
+            client,
+            screen_rect,
             xoffset,
             yoffset,
-            win_width,
-            win_height,
+            column_width,
+            row_height,
             self.border_width,
             px,
             margin=self.margin,

@@ -26,7 +26,9 @@ class Zoomy(_SimpleLayoutBase):
     def configure(self, client: Window, screen_rect: ScreenRect) -> None:
         left, right = screen_rect.hsplit(screen_rect.width - self.columnwidth)
         if client is self.clients.current_client:
-            client.place(
+            self.place_client(
+                client,
+                screen_rect,
                 left.x,
                 left.y,
                 left.width,
@@ -43,7 +45,9 @@ class Zoomy(_SimpleLayoutBase):
             if offset < 0:
                 offset += len(self.clients)
             if h * (len(self.clients) - 1) < right.height:
-                client.place(
+                self.place_client(
+                    client,
+                    screen_rect,
                     right.x,
                     right.y + h * offset,
                     right.width,
@@ -54,7 +58,9 @@ class Zoomy(_SimpleLayoutBase):
                 )
             else:
                 hh = (right.height - h) // (len(self.clients) - 1)
-                client.place(
+                self.place_client(
+                    client,
+                    screen_rect,
                     right.x,
                     right.y + hh * offset,
                     right.width,

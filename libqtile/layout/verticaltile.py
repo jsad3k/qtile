@@ -114,7 +114,7 @@ class VerticalTile(_SimpleLayoutBase):
             margin = self.margin if n > 1 else self.single_margin
 
             # width
-            width = screen_rect.width - border_width * 2
+            width = screen_rect.width
 
             # y
             y = screen_rect.y
@@ -124,12 +124,12 @@ class VerticalTile(_SimpleLayoutBase):
                 main_area_height = int(screen_rect.height * self.ratio)
                 sec_area_height = screen_rect.height - main_area_height
 
-                main_pane_height = main_area_height - border_width * 2
-                sec_pane_height = sec_area_height // (n - 1) - border_width * 2
-                normal_pane_height = (screen_rect.height // n) - (border_width * 2)
+                main_pane_height = main_area_height
+                sec_pane_height = sec_area_height // (n - 1)
+                normal_pane_height = screen_rect.height // n
 
                 if self.maximized:
-                    y += (index * sec_pane_height) + (border_width * 2 * index)
+                    y += index * sec_pane_height
                     if window is self.maximized:
                         height = main_pane_height
                     else:
@@ -138,12 +138,20 @@ class VerticalTile(_SimpleLayoutBase):
                             y = y - sec_pane_height + main_pane_height
                 else:
                     height = normal_pane_height
-                    y += (index * normal_pane_height) + (border_width * 2 * index)
+                    y += index * normal_pane_height
             else:
-                height = screen_rect.height - 2 * border_width
+                height = screen_rect.height
 
-            window.place(
-                screen_rect.x, y, width, height, border_width, border_color, margin=margin
+            self.place_client(
+                window,
+                screen_rect,
+                screen_rect.x,
+                y,
+                width,
+                height,
+                border_width,
+                border_color,
+                margin=margin,
             )
             window.unhide()
         else:

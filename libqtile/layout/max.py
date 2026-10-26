@@ -30,11 +30,13 @@ class Max(_SimpleLayoutBase):
 
     def configure(self, client: Window, screen_rect: ScreenRect) -> None:
         if not self.only_focused or (self.clients and client is self.clients.current_client):
-            client.place(
+            self.place_client(
+                client,
+                screen_rect,
                 screen_rect.x,
                 screen_rect.y,
-                screen_rect.width - self.border_width * 2,
-                screen_rect.height - self.border_width * 2,
+                screen_rect.width,
+                screen_rect.height,
                 self.border_width,
                 self.border_focus if client.has_focus else self.border_normal,
                 margin=self.margin,

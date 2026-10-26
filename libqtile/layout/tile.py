@@ -166,11 +166,13 @@ class Tile(_SimpleLayoutBase):
                 border_width = 0
             else:
                 border_width = self.border_width
-            client.place(
+            self.place_client(
+                client,
+                screen_rect,
                 x,
                 y,
-                w - border_width * 2,
-                h - border_width * 2,
+                w,
+                h,
                 border_width,
                 bc,
                 margin=0

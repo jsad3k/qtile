@@ -232,11 +232,13 @@ class RatioTile(_SimpleLayoutBase):
             bc = self.border_focus
         else:
             bc = self.border_normal
-        win.place(
+        self.place_client(
+            win,
+            screen,
             x,
             y,
-            w - self.border_width * 2,
-            h - self.border_width * 2,
+            w,
+            h,
             self.border_width,
             bc,
             margin=self.margin,

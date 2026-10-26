@@ -962,11 +962,13 @@ class Plasma(Layout):
             + ("" if node.flexible else "_fixed"),
         )
         x, y, width, height = node.pixel_perfect
-        client.place(
+        self.place_client(
+            client,
+            screen_rect,
             x,
             y,
-            width - 2 * border_width,
-            height - 2 * border_width,
+            width,
+            height,
             border_width,
             border_color,
             margin=self.margin,
