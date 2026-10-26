@@ -317,16 +317,19 @@ class Columns(Layout):
                 pos += col.heights[c]
             height = int(0.5 + col.heights[client] * screen_rect.height * 0.01 / len(col))
             y = screen_rect.y + int(0.5 + pos * screen_rect.height * 0.01 / len(col))
-            client.place(
-                x, y, width - 2 * border, height - 2 * border, border, color, margin=margin_size
+
+            self.place_client(
+                client, screen_rect, x, y, width, height, border, color, margin=margin_size
             )
             client.unhide()
         elif client == col.cw:
-            client.place(
+            self.place_client(
+                client,
+                screen_rect,
                 x,
                 screen_rect.y,
-                width - 2 * border,
-                screen_rect.height - 2 * border,
+                width,
+                screen_rect.height,
                 border,
                 color,
                 margin=margin_size,

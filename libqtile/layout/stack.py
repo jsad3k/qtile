@@ -222,17 +222,17 @@ class Stack(Layout):
 
         column_width = int(screen_rect.width / len(self.stacks))
         xoffset = screen_rect.x + i * column_width
-        window_width = column_width - 2 * self.border_width
 
         if s.split:
             column_height = int(screen_rect.height / len(s))
-            window_height = column_height - 2 * self.border_width
             yoffset = screen_rect.y + s.index(client) * column_height
-            client.place(
+            self.place_client(
+                client,
+                screen_rect,
                 xoffset,
                 yoffset,
-                window_width,
-                window_height,
+                column_width,
+                column_height,
                 self.border_width,
                 px,
                 margin=self.margin,
@@ -240,11 +240,13 @@ class Stack(Layout):
             client.unhide()
         else:
             if client == s.cw:
-                client.place(
+                self.place_client(
+                    client,
+                    screen_rect,
                     xoffset,
                     screen_rect.y,
-                    window_width,
-                    screen_rect.height - 2 * self.border_width,
+                    column_width,
+                    screen_rect.height,
                     self.border_width,
                     px,
                     margin=self.margin,

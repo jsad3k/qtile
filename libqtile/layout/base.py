@@ -11,6 +11,7 @@ from libqtile.command.base import CommandObject, ItemT, expose_command
 from libqtile.command.interface import CommandError
 from libqtile.config import ScreenRect
 from libqtile.group import _Group
+from libqtile.utils import ColorsType
 
 
 class Layout(CommandObject, configurable.Configurable, metaclass=ABCMeta):
@@ -94,6 +95,47 @@ class Layout(CommandObject, configurable.Configurable, metaclass=ABCMeta):
 
     def blur(self) -> None:
         """Called whenever focus is gone from this layout"""
+
+    def place_client(
+        self,
+        client: Window,
+        screen_rect: ScreenRect,
+        left: int,
+        top: int,
+        width: int,
+        height: int,
+        border: int,
+        color: ColorsType | None,
+        margin: int | list[int],
+    ) -> None:
+        """Place a client on the screen
+
+        Will prevent double margins by applying east and south margins only
+        when the client is the rightmost or the bottommost window.
+        """
+        if isinstance(margin, list):
+            # Copy the list: `margin` is typically the layout's own long-lived
+            # self.margin/self.margin_on_single config. Mutating it in place
+            # would permanently zero out east/south on every future call.
+            fixed_margin = margin.copy()
+        else:
+            fixed_margin = [margin] * 4
+        rightmost = left + width - screen_rect.x >= screen_rect.width
+        bottommost = top + height - screen_rect.y >= screen_rect.height
+        if not rightmost:
+            fixed_margin[1] = 0
+        if not bottommost:
+            fixed_margin[2] = 0
+
+        client.place(
+            left,
+            top,
+            width - 2 * border,
+            height - 2 * border,
+            border,
+            color,
+            margin=fixed_margin,
+        )
 
     @expose_command()
     def info(self) -> dict[str, Any]:

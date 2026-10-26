@@ -226,11 +226,13 @@ class Bsp(Layout):
         margin = self.margin_on_single if node is self.root else self.margin
 
         if node is not None:
-            client.place(
+            self.place_client(
+                client,
+                screen_rect,
                 node.x,
                 node.y,
-                node.w - 2 * border,
-                node.h - 2 * border,
+                node.w,
+                node.h,
                 border,
                 color,
                 margin=margin,
